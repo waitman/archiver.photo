@@ -6,6 +6,8 @@ Archiver.Photo
         /etc/archiver.photo.json
 ------------------------------------------
 
+** Not yet 100% ready **
+
 This software was developed to solve the problem of inexpensively 
 indexing a photo archive of several years of work. The strategy is to 
 use an array of disconnected drives as storage medium for the 
