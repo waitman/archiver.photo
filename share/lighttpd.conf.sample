@@ -1,0 +1,90 @@
+server.modules = (
+	"mod_access",
+	"mod_alias",
+	"mod_compress",
+ 	"mod_redirect",
+#       "mod_rewrite",
+	"mod_cgi",
+	"mod_setenv"
+)
+
+server.document-root        = "/var/www"
+server.upload-dirs          = ( "/var/cache/lighttpd/uploads" )
+server.errorlog             = "/var/log/lighttpd/error.log"
+server.breakagelog          = "/var/log/lighttpd/breakage.log" 
+server.pid-file             = "/var/run/lighttpd.pid"
+server.username             = "www-data"
+server.groupname            = "www-data"
+server.port                 = 80
+
+setenv.add-environment = ( 
+	"GOPATH" => "/usr/bin"
+)
+
+mimetype.assign             = (
+  ".php"          =>      "application/x-httpd-php",
+  ".pdf"          =>      "application/pdf",
+  ".gz"           =>      "application/x-gzip",
+  ".tar.gz"       =>      "application/x-tgz",
+  ".tgz"          =>      "application/x-tgz",
+  ".tar"          =>      "application/x-tar",
+  ".zip"          =>      "application/zip",
+  ".mp3"          =>      "audio/mpeg",
+  ".jpg"          =>      "image/jpeg",
+  ".png"          =>      "image/png",
+  ".css"          =>      "text/css",
+  ".html"         =>      "text/html",
+  ".htm"          =>      "text/html",
+  ".js"           =>      "text/javascript",
+  ".c"            =>      "text/plain",
+  ".cpp"          =>      "text/plain",
+  ".log"          =>      "text/plain",
+  ".conf"         =>      "text/plain",
+  ".text"         =>      "text/plain",
+  ".txt"          =>      "text/plain",
+  ".xml"          =>      "text/xml",
+  ".bz2"          =>      "application/x-bzip",
+  ".tbz"          =>      "application/x-bzip-compressed-tar",
+  ".tar.bz2"      =>      "application/x-bzip-compressed-tar"
+ )
+
+alias.url += ( "/cgi-bin" => "/usr/lib/cgi-bin" )
+$HTTP["url"] =~ "^/cgi-bin" {
+	cgi.assign = ( "" => "" )
+}
+
+$HTTP["scheme"] == "http" {
+    # capture vhost name with regex conditiona -> %0 in redirect pattern
+    # must be the most inner block to the redirect rule
+    $HTTP["host"] =~ ".*" {
+        url.redirect = (".*" => "https://%0$0")
+    }
+}
+
+$SERVER["socket"] == "10.240.159.139:443" {
+ssl.engine = "enable"
+ssl.pemfile = "/root/certs/server.pem"
+ssl.ca-file = "/root/certs/ca.pem"
+ssl.use-sslv2          = "disable"
+ssl.use-sslv3           = "disable"
+ssl.use-compression = "disable"
+ssl.honor-cipher-order = "enable"
+ssl.cipher-list = "HIGH:AES256+EECDH:AES256+EDH:!3DES:!aNULL:!eNULL"
+
+setenv.add-environment = (
+        "HTTPS" => "on"
+)
+server.document-root = "/var/www"
+}
+
+index-file.names            = ( "index.html" )
+url.access-deny             = ( "~", ".inc" )
+static-file.exclude-extensions = ( ".fcgi" )
+
+#compress.cache-dir          = "/var/cache/lighttpd/compress/"
+#compress.filetype           = ( "application/javascript", "text/css", "text/html", "text/plain" )
+
+# default listening port for IPv6 falls back to the IPv4 port
+#include_shell "/usr/share/lighttpd/use-ipv6.pl " + server.port
+#include_shell "/usr/share/lighttpd/create-mime.assign.pl"
+#include_shell "/usr/share/lighttpd/include-conf-enabled.pl"

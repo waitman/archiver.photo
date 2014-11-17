@@ -1,0 +1,6 @@
+{
+	"Connstr" : "YOUR GOOGLE SQL CONNECTION STRING",
+        "projectID" : "YOUR GOOGLE PROJECT ID",
+        "clientId" : "YOUR GOOGLE CLIENT ID",
+        "clientSecret" : "YOUR GOOGLE CLIENT SECRET"
+}
